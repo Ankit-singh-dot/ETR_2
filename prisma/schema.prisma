@@ -134,3 +134,16 @@ model CampusActivity {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
+
+model Collaboration {
+  id            Int       @id @default(autoincrement())
+  industryName  String    @db.VarChar(100)
+  program       Program   @relation(fields: [programId], references: [id])
+  programId     String
+  companyName   String    @db.VarChar(100)
+  internshipMOU String?   @db.VarChar(100)
+  type          String?   @db.VarChar(50) // Internship, MOU, Project
+  yearOfSetup   Int?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
