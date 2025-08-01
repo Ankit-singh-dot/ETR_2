@@ -122,3 +122,15 @@ model SubAdmin {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 }
+
+model CampusActivity {
+  id           Int       @id @default(autoincrement())
+  eventName    String    @db.VarChar(100)
+  eventType    String    @db.VarChar(50)
+  startDate    DateTime
+  endDate      DateTime
+  organizedBy  String    @db.VarChar(100)
+  department   String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
