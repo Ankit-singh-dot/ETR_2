@@ -13,3 +13,30 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum AdmissionStatus {
+  APPLIED
+  WAITING
+  REGISTERED
+  SELECTED
+  REJECTED
+}
+
+enum DocumentStage {
+  APPLIED
+  VERIFIED
+  APPROVED
+  REJECTED
+}
+
+enum UserRole {
+  ADMIN
+  SUBADMIN
+  STUDENT
+}
