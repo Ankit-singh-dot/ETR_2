@@ -147,3 +147,16 @@ model Collaboration {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
+model PlacementRecord {
+  id               Int       @id @default(autoincrement())
+  program          Program   @relation(fields: [programId], references: [id])
+  programId        String
+  placementYear    Int
+  totalStudents    Int
+  eligibleStudents Int
+  studentsPlaced   Int
+  highestPackage   Decimal   @db.Decimal(15,3)
+  averagePackage   Decimal   @db.Decimal(15,3)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+}
