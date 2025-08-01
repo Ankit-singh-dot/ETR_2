@@ -73,3 +73,12 @@ model FeeStructure {
   program                 Program   @relation(fields: [programId], references: [id])
   programId               String
 }
+
+model EligibilityCriteria {
+  id              Int       @id @default(autoincrement())
+  minQualification String    @db.VarChar(100)
+  minPercentage    Decimal   @db.Decimal(7,3)
+  entranceExamName String    @db.VarChar(100)
+  program          Program   @relation(fields: [programId], references: [id])
+  programId        String
+}
