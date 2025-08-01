@@ -63,3 +63,13 @@ model ProgramSeat {
   program        Program   @relation(fields: [programId], references: [id])
   programId      String
 }
+
+model FeeStructure {
+  id                     Int       @id @default(autoincrement())
+  totalFee               Decimal   @db.Decimal(10,3)
+  optionalScholarshipFee  Decimal?  @db.Decimal(10,3)
+  scholarshipAmount       Decimal?  @db.Decimal(10,3)
+  netFee                  Decimal   @db.Decimal(10,3)
+  program                 Program   @relation(fields: [programId], references: [id])
+  programId               String
+}
