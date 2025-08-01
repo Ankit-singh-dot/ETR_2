@@ -40,3 +40,17 @@ enum UserRole {
   SUBADMIN
   STUDENT
 }
+model Program {
+  id              String                @id @default(uuid())
+  name            String                @db.VarChar(100)
+  programType     String                @db.VarChar(20) // UG, PG, Diploma
+  durationYears   Int
+  description     String?
+  seats           ProgramSeat[]
+  fees            FeeStructure[]
+  eligibility     EligibilityCriteria[]
+  students        Student[]
+  placements      PlacementRecord[]
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+}
