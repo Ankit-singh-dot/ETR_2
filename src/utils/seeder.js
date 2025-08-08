@@ -170,7 +170,9 @@ export const seedDatabase = async () => {
 
     // Create sample students (Indian names and context)
     const studentPassword = await hashPassword('student123');
-    await Promise.all([
+    
+    // Create UserLogin records for students
+    const studentUserLogins = await Promise.all([
       prisma.userLogin.upsert({
         where: { email: 'rahul.kumar@student.com' },
         update: {},
@@ -200,13 +202,13 @@ export const seedDatabase = async () => {
       })
     ]);
 
+    // Create Student records linked to UserLogin
     await Promise.all([
       prisma.student.upsert({
-        where: { email: 'rahul.kumar@student.com' },
+        where: { userLoginId: studentUserLogins[0].id },
         update: {},
         create: {
           fullName: 'Rahul Kumar',
-          email: 'rahul.kumar@student.com',
           phone: '+919876543210',
           dob: new Date('2000-05-15'),
           gender: 'MALE',
@@ -215,15 +217,15 @@ export const seedDatabase = async () => {
           admissionStatus: 'REGISTERED',
           admissionNumber: 'ADM20240001',
           programId: 'btech-cs-2024',
-          seatId: 1
+          seatId: 1,
+          userLoginId: studentUserLogins[0].id
         }
       }),
       prisma.student.upsert({
-        where: { email: 'priya.sharma@student.com' },
+        where: { userLoginId: studentUserLogins[1].id },
         update: {},
         create: {
           fullName: 'Priya Sharma',
-          email: 'priya.sharma@student.com',
           phone: '+919876543211',
           dob: new Date('1999-08-22'),
           gender: 'FEMALE',
@@ -232,15 +234,15 @@ export const seedDatabase = async () => {
           admissionStatus: 'APPLIED',
           admissionNumber: 'ADM20240002',
           programId: 'mtech-it-2024',
-          seatId: 2
+          seatId: 2,
+          userLoginId: studentUserLogins[1].id
         }
       }),
       prisma.student.upsert({
-        where: { email: 'amit.patel@student.com' },
+        where: { userLoginId: studentUserLogins[2].id },
         update: {},
         create: {
           fullName: 'Amit Patel',
-          email: 'amit.patel@student.com',
           phone: '+919876543212',
           dob: new Date('2001-03-10'),
           gender: 'MALE',
@@ -249,7 +251,8 @@ export const seedDatabase = async () => {
           admissionStatus: 'SELECTED',
           admissionNumber: 'ADM20240003',
           programId: 'mba-2024',
-          seatId: 3
+          seatId: 3,
+          userLoginId: studentUserLogins[2].id
         }
       })
     ]);
@@ -374,7 +377,7 @@ export const seedDatabase = async () => {
 
     // Create sub-admin (Indian context)
     const subAdminPassword = await hashPassword('subadmin123');
-    await prisma.userLogin.upsert({
+    const subAdminUserLogin = await prisma.userLogin.upsert({
       where: { email: 'subadmin@etr.com' },
       update: {},
       create: {
@@ -385,14 +388,13 @@ export const seedDatabase = async () => {
     });
 
     await prisma.subAdmin.upsert({
-      where: { email: 'subadmin@etr.com' },
+      where: { userLoginId: subAdminUserLogin.id },
       update: {},
       create: {
         name: 'Dr. Rajesh Kumar',
-        email: 'subadmin@etr.com',
         phone: '+919876543213',
         department: 'Computer Science',
-        password: subAdminPassword
+        userLoginId: subAdminUserLogin.id
       }
     });
 
@@ -435,17 +437,17 @@ export const seedDatabase = async () => {
 
     // Update students to assign them to sales persons
     await prisma.student.update({
-      where: { email: 'rahul.kumar@student.com' },
+      where: { userLoginId: studentUserLogins[0].id },
       data: { salesId: salesPersons[0].id }
     });
 
     await prisma.student.update({
-      where: { email: 'priya.sharma@student.com' },
+      where: { userLoginId: studentUserLogins[1].id },
       data: { salesId: salesPersons[1].id }
     });
 
     await prisma.student.update({
-      where: { email: 'amit.patel@student.com' },
+      where: { userLoginId: studentUserLogins[2].id },
       data: { salesId: salesPersons[2].id }
     });
 

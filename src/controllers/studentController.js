@@ -5,7 +5,6 @@ export const createStudent = async (req, res) => {
   try {
     const {
       fullName,
-      email,
       phone,
       dob,
       gender,
@@ -16,22 +15,12 @@ export const createStudent = async (req, res) => {
       seatId
     } = req.body;
 
-
-    const existingStudent = await prisma.student.findUnique({
-      where: { email }
-    });
-
-    if (existingStudent) {
-      return errorResponse(res, 'Student with this email already exists', 409);
-    }
-
-
+    // Generate admission number
     const admissionNumber = generateAdmissionNumber();
 
     const student = await prisma.student.create({
       data: {
         fullName,
-        email,
         phone,
         dob: new Date(dob),
         gender,
@@ -44,7 +33,8 @@ export const createStudent = async (req, res) => {
       },
       include: {
         program: true,
-        seat: true
+        seat: true,
+        userLogin: true
       }
     });
 
@@ -71,7 +61,6 @@ export const getAllStudents = async (req, res) => {
     if (search) {
       where.OR = [
         { fullName: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } },
         { admissionNumber: { contains: search, mode: 'insensitive' } }
       ];
     }
@@ -91,6 +80,7 @@ export const getAllStudents = async (req, res) => {
         include: {
           program: true,
           seat: true,
+          userLogin: true,
           admissionTracking: {
             orderBy: { updatedAt: 'desc' }
           }
@@ -124,6 +114,7 @@ export const getStudentById = async (req, res) => {
           }
         },
         seat: true,
+        userLogin: true,
         admissionTracking: {
           orderBy: { updatedAt: 'desc' }
         }
@@ -156,7 +147,8 @@ export const updateStudent = async (req, res) => {
       data: updateData,
       include: {
         program: true,
-        seat: true
+        seat: true,
+        userLogin: true
       }
     });
 

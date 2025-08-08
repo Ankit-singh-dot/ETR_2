@@ -110,7 +110,6 @@ async function runTests() {
   console.log('\n7. Testing Create Student...');
   const newStudentResult = await apiCall('/students', 'POST', {
     fullName: 'Test Student Kumar',
-    email: `test.student.${Date.now()}@example.com`,
     phone: '+919999999999',
     dob: '2002-01-15',
     gender: 'MALE',

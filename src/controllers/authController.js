@@ -9,7 +9,6 @@ export const login = async (req, res) => {
     const user = await prisma.userLogin.findUnique({
       where: { email },
       include: {
-
         student: true,
         subAdmin: true
       }
@@ -49,7 +48,7 @@ export const register = async (req, res) => {
   try {
     const { email, password, role, ...userData } = req.body;
 
-
+    // Check if user already exists
     const existingUser = await prisma.userLogin.findUnique({
       where: { email }
     });
@@ -60,42 +59,47 @@ export const register = async (req, res) => {
 
     const hashedPassword = await hashPassword(password);
 
+    // Use a transaction to ensure data consistency
+    const result = await prisma.$transaction(async (tx) => {
+      // Create UserLogin record first
+      const userLogin = await tx.userLogin.create({
+        data: {
+          email,
+          password: hashedPassword,
+          role
+        }
+      });
 
-    const userLogin = await prisma.userLogin.create({
-      data: {
-        email,
-        password: hashedPassword,
-        role
+      // Create role-specific record based on role
+      let roleData = null;
+      if (role === 'STUDENT') {
+        roleData = await tx.student.create({
+          data: {
+            ...userData,
+            admissionNumber: generateAdmissionNumber(),
+            userLoginId: userLogin.id
+          }
+        });
+      } else if (role === 'SUBADMIN') {
+        roleData = await tx.subAdmin.create({
+          data: {
+            ...userData,
+            userLoginId: userLogin.id
+          }
+        });
       }
+
+      return { userLogin, roleData };
     });
 
-
-    let roleData = null;
-    if (role === 'STUDENT') {
-      roleData = await prisma.student.create({
-        data: {
-          ...userData,
-          admissionNumber: generateAdmissionNumber(),
-          userLoginId: userLogin.id
-        }
-      });
-    } else if (role === 'SUBADMIN') {
-      roleData = await prisma.subAdmin.create({
-        data: {
-          ...userData,
-          userLoginId: userLogin.id
-        }
-      });
-    }
-
     const token = generateToken({
-      userId: userLogin.id,
-      email: userLogin.email,
-      role: userLogin.role
+      userId: result.userLogin.id,
+      email: result.userLogin.email,
+      role: result.userLogin.role
     });
 
     return successResponse(res, { 
-      user: { ...userLogin, [role.toLowerCase()]: roleData }, 
+      user: { ...result.userLogin, [role.toLowerCase()]: result.roleData }, 
       token 
     }, 'Registration successful', 201);
   } catch (error) {

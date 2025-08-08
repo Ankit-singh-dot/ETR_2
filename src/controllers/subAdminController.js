@@ -6,37 +6,22 @@ export const createSubAdmin = async (req, res) => {
   try {
     const {
       name,
-      email,
       phone,
-      department,
-      password
+      department
     } = req.body;
-
-
-    const existingSubAdmin = await prisma.subAdmin.findUnique({
-      where: { email }
-    });
-
-    if (existingSubAdmin) {
-      return errorResponse(res, 'Sub-admin with this email already exists', 409);
-    }
-
-    const hashedPassword = await hashPassword(password);
 
     const subAdmin = await prisma.subAdmin.create({
       data: {
         name,
-        email,
         phone,
-        department,
-        password: hashedPassword
+        department
+      },
+      include: {
+        userLogin: true
       }
     });
 
-
-    const { password: _, ...subAdminData } = subAdmin;
-
-    return successResponse(res, subAdminData, 'Sub-admin created successfully', 201);
+    return successResponse(res, subAdmin, 'Sub-admin created successfully', 201);
   } catch (error) {
     console.error('Create sub-admin error:', error);
     return errorResponse(res, 'Failed to create sub-admin', 500);
@@ -56,8 +41,7 @@ export const getAllSubAdmins = async (req, res) => {
     const where = {};
     if (search) {
       where.OR = [
-        { name: { contains: search, mode: 'insensitive' } },
-        { email: { contains: search, mode: 'insensitive' } }
+        { name: { contains: search, mode: 'insensitive' } }
       ];
     }
     if (department) {
@@ -67,14 +51,8 @@ export const getAllSubAdmins = async (req, res) => {
     const [subAdmins, total] = await Promise.all([
       prisma.subAdmin.findMany({
         where,
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone: true,
-          department: true,
-          createdAt: true,
-          updatedAt: true
+        include: {
+          userLogin: true
         },
         skip,
         take: parseInt(limit),
@@ -96,14 +74,8 @@ export const getSubAdminById = async (req, res) => {
 
     const subAdmin = await prisma.subAdmin.findUnique({
       where: { id: parseInt(id) },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        department: true,
-        createdAt: true,
-        updatedAt: true
+      include: {
+        userLogin: true
       }
     });
 
@@ -123,32 +95,20 @@ export const updateSubAdmin = async (req, res) => {
     const { id } = req.params;
     const {
       name,
-      email,
       phone,
-      department,
-      password
+      department
     } = req.body;
 
     const updateData = {};
     if (name) updateData.name = name;
-    if (email) updateData.email = email;
     if (phone) updateData.phone = phone;
     if (department !== undefined) updateData.department = department;
-    if (password) {
-      updateData.password = await hashPassword(password);
-    }
 
     const subAdmin = await prisma.subAdmin.update({
       where: { id: parseInt(id) },
       data: updateData,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        phone: true,
-        department: true,
-        createdAt: true,
-        updatedAt: true
+      include: {
+        userLogin: true
       }
     });
 
