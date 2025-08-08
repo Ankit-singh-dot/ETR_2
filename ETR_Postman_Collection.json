@@ -1,0 +1,1018 @@
+{
+  "info": {
+    "name": "ETR (Educational Technology Resource) API",
+    "description": "Complete API collection for Educational Technology Resource management system with Indian educational context",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Login successful', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.environment.set('auth_token', jsonData.data.token);",
+                  "    pm.environment.set('user_role', jsonData.data.user.role);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@etr.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Sub-Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"subadmin@etr.com\",\n  \"password\": \"subadmin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Student Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"rahul.kumar@student.com\",\n  \"password\": \"student123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/profile",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Programs",
+      "item": [
+        {
+          "name": "Get All Programs",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Programs retrieved', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    if (jsonData.data.length > 0) {",
+                  "        pm.environment.set('program_id', jsonData.data[0].id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/programs?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["programs"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Program",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Program created', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.environment.set('new_program_id', jsonData.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"B.Tech Artificial Intelligence\",\n  \"programType\": \"BACHELORS\",\n  \"durationYears\": 4,\n  \"description\": \"Bachelor of Technology in Artificial Intelligence and Machine Learning with focus on modern AI technologies\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/programs",
+              "host": ["{{base_url}}"],
+              "path": ["programs"]
+            }
+          }
+        },
+        {
+          "name": "Get Program by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/programs/{{program_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["programs", "{{program_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Program Seat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"totalSeats\": 60,\n  \"reservedSeats\": 15,\n  \"openSeats\": 45,\n  \"programId\": \"{{new_program_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/programs/seats",
+              "host": ["{{base_url}}"],
+              "path": ["programs", "seats"]
+            }
+          }
+        },
+        {
+          "name": "Create Eligibility Criteria",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"minQualification\": \"12th Standard with PCM\",\n  \"minPercentage\": 80.0,\n  \"entranceExamName\": \"JEE Advanced\",\n  \"programId\": \"{{new_program_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/programs/eligibility",
+              "host": ["{{base_url}}"],
+              "path": ["programs", "eligibility"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Students",
+      "item": [
+        {
+          "name": "Get All Students",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Students retrieved', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    if (jsonData.data.length > 0) {",
+                  "        pm.environment.set('student_id', jsonData.data[0].id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/students?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["students"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Student",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Student created', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.environment.set('new_student_id', jsonData.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Sneha Reddy\",\n  \"email\": \"sneha.reddy@student.com\",\n  \"phone\": \"+919876543217\",\n  \"dob\": \"2003-07-20\",\n  \"gender\": \"FEMALE\",\n  \"address\": \"Plot 45, Hitech City, Hyderabad, Telangana - 500081\",\n  \"admissionYear\": 2024,\n  \"admissionStatus\": \"APPLIED\",\n  \"programId\": \"{{program_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/students",
+              "host": ["{{base_url}}"],
+              "path": ["students"]
+            }
+          }
+        },
+        {
+          "name": "Get Student by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/students/{{student_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["students", "{{student_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Add Admission Tracking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"stage\": \"VERIFIED\",\n  \"documentName\": \"12th Mark Sheet\",\n  \"remarks\": \"Document verified and accepted\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/students/{{student_id}}/admission-tracking",
+              "host": ["{{base_url}}"],
+              "path": ["students", "{{student_id}}", "admission-tracking"]
+            }
+          }
+        },
+        {
+          "name": "Update Admission Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"admissionStatus\": \"SELECTED\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/students/{{student_id}}/admission-status",
+              "host": ["{{base_url}}"],
+              "path": ["students", "{{student_id}}", "admission-status"]
+            }
+          }
+        },
+        {
+          "name": "Get Student Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/students/stats",
+              "host": ["{{base_url}}"],
+              "path": ["students", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sales Persons",
+      "item": [
+        {
+          "name": "Get All Sales Persons",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Sales persons retrieved', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    if (jsonData.data.length > 0) {",
+                  "        pm.environment.set('salesperson_id', jsonData.data[0].id);",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/salespersons?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["salespersons"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Sales Person",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Sales person created', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.eql(true);",
+                  "    pm.environment.set('new_salesperson_id', jsonData.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ravi Gupta\",\n  \"email\": \"ravi.gupta@etr.com\",\n  \"phone\": \"+919876543218\",\n  \"region\": \"East India\",\n  \"assignedProgram\": \"UG\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/salespersons",
+              "host": ["{{base_url}}"],
+              "path": ["salespersons"]
+            }
+          }
+        },
+        {
+          "name": "Get Sales Person by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/salespersons/{{salesperson_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["salespersons", "{{salesperson_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Assign Student to Sales Person",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"salesPersonId\": {{salesperson_id}},\n  \"studentId\": {{new_student_id}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/salespersons/assign-student",
+              "host": ["{{base_url}}"],
+              "path": ["salespersons", "assign-student"]
+            }
+          }
+        },
+        {
+          "name": "Get Sales Person Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/salespersons/{{salesperson_id}}/stats",
+              "host": ["{{base_url}}"],
+              "path": ["salespersons", "{{salesperson_id}}", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Sales Persons by Region",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/salespersons/region/North India",
+              "host": ["{{base_url}}"],
+              "path": ["salespersons", "region", "North India"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fee Management",
+      "item": [
+        {
+          "name": "Get All Fee Structures",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/fees?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["fees"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Fee Structure",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"totalFee\": 1000000.00,\n  \"optionalScholarshipFee\": 120000.00,\n  \"scholarshipAmount\": 180000.00,\n  \"netFee\": 820000.00,\n  \"programId\": \"{{new_program_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/fees",
+              "host": ["{{base_url}}"],
+              "path": ["fees"]
+            }
+          }
+        },
+        {
+          "name": "Calculate Scholarship",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"programId\": \"{{program_id}}\",\n  \"studentPercentage\": 92.5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/fees/calculate-scholarship",
+              "host": ["{{base_url}}"],
+              "path": ["fees", "calculate-scholarship"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Campus Activities",
+      "item": [
+        {
+          "name": "Get All Activities",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/activities?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["activities"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Campus Activity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventName\": \"AI/ML Workshop 2024\",\n  \"eventType\": \"WORKSHOP\",\n  \"startDate\": \"2024-09-15T10:00:00.000Z\",\n  \"endDate\": \"2024-09-17T17:00:00.000Z\",\n  \"organizedBy\": \"AI/ML Department\",\n  \"department\": \"Computer Science\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/activities",
+              "host": ["{{base_url}}"],
+              "path": ["activities"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Placement Records",
+      "item": [
+        {
+          "name": "Get All Placement Records",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/placements?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["placements"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Placement Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"programId\": \"{{program_id}}\",\n  \"placementYear\": 2024,\n  \"totalStudents\": 60,\n  \"eligibleStudents\": 55,\n  \"studentsPlaced\": 48,\n  \"highestPackage\": 5000000.00,\n  \"averagePackage\": 950000.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/placements",
+              "host": ["{{base_url}}"],
+              "path": ["placements"]
+            }
+          }
+        },
+        {
+          "name": "Get Placement Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/placements/stats",
+              "host": ["{{base_url}}"],
+              "path": ["placements", "stats"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Collaborations",
+      "item": [
+        {
+          "name": "Get All Collaborations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/collaborations?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["collaborations"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Collaboration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"industryName\": \"Artificial Intelligence\",\n  \"programId\": \"{{new_program_id}}\",\n  \"companyName\": \"Google India\",\n  \"internshipMOU\": \"MOU-2024-004\",\n  \"type\": \"INTERNSHIP\",\n  \"yearOfSetup\": 2024\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/collaborations",
+              "host": ["{{base_url}}"],
+              "path": ["collaborations"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sub-Admin Management",
+      "item": [
+        {
+          "name": "Get All Sub-Admins",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/subadmins?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["subadmins"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Sub-Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dr. Priya Nair\",\n  \"email\": \"priya.nair@etr.com\",\n  \"phone\": \"+919876543219\",\n  \"department\": \"Artificial Intelligence\",\n  \"password\": \"SubAdmin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/subadmins",
+              "host": ["{{base_url}}"],
+              "path": ["subadmins"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status code is 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('API is healthy', function () {",
+                  "    var jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.status).to.eql('OK');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "// Auto-set Authorization header if token exists",
+          "if (pm.environment.get('auth_token') && !pm.request.headers.has('Authorization')) {",
+          "    pm.request.headers.add({",
+          "        key: 'Authorization',",
+          "        value: 'Bearer ' + pm.environment.get('auth_token')",
+          "    });",
+          "}",
+          "",
+          "// Set Content-Type for POST/PUT requests",
+          "if ((pm.request.method === 'POST' || pm.request.method === 'PUT') && !pm.request.headers.has('Content-Type')) {",
+          "    pm.request.headers.add({",
+          "        key: 'Content-Type',",
+          "        value: 'application/json'",
+          "    });",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "// Store auth token from login response",
+          "if (pm.response.json().data && pm.response.json().data.token) {",
+          "    pm.environment.set('auth_token', pm.response.json().data.token);",
+          "}",
+          "",
+          "// Basic response validation",
+          "pm.test('Response has correct structure', function () {",
+          "    var jsonData = pm.response.json();",
+          "    pm.expect(jsonData).to.have.property('success');",
+          "    pm.expect(jsonData).to.have.property('message');",
+          "});",
+          "",
+          "// Log response for debugging",
+          "console.log('Response:', pm.response.json());"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    }
+  ]
+}
